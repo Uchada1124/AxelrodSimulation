@@ -1,13 +1,13 @@
 import streamlit as st
 from simulation import Simulation
-from strategy import Strategy, ALLC, ALLD, TFT
+from strategy import Strategy, ALLC, ALLD, TFT, TTT
 import matplotlib.pyplot as plt
 
 # Streamlit Sidebar
 st.sidebar.header("Simulation Settings")
 
-# Select strategies
-strategy_classes = {"ALLC": ALLC, "ALLD": ALLD, "TFT": TFT}
+# Add available strategies
+strategy_classes = {"ALLC": ALLC, "ALLD": ALLD, "TFT": TFT, "TTT": TTT}
 selected_strategies = st.sidebar.multiselect(
     "Select Strategies", options=list(strategy_classes.keys()), default=list(strategy_classes.keys())
 )
@@ -52,8 +52,8 @@ if remaining_players > 0:
 if st.sidebar.button("Run Simulation"):
     st.write("### Simulation Results")
     
-    # Initialize simulation
-    sim = Simulation(player_count, payoffs, total_rounds, game_rounds)
+    # Initialize simulation with selected strategies
+    sim = Simulation(player_count, payoffs, selected_strategies, total_rounds, game_rounds)
     
     # Set initial distribution
     sim.initialize_players(initial_distribution)
@@ -64,7 +64,8 @@ if st.sidebar.button("Run Simulation"):
     # Plot results
     fig, ax = plt.subplots()
     for strategy_name, populations in sim.strategy_population.items():
-        ax.plot(populations, label=strategy_name)
+        if strategy_name in selected_strategies:  # Ensure only selected strategies are plotted
+            ax.plot(populations, label=strategy_name)
     ax.set_xlabel("Round")
     ax.set_ylabel("Population")
     ax.set_title("Strategy Population Over Time")
