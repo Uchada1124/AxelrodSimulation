@@ -38,6 +38,19 @@ class TFT(Strategy):
         if not previous_actions:
             return 'C'
         return previous_actions[-1][1]
+    
+class TTT(Strategy):
+    def __init__(self) -> None:
+        super().__init__("TTT")
+
+    def choose_action(self, previous_actions: List[Tuple[str, str]]) -> str:
+        if len(previous_actions) < 2:
+            return 'C'
+
+        if previous_actions[-1][1] == 'D' and previous_actions[-2][1] == 'D':
+            return 'D'
+
+        return 'C'
 
 class Player:
     def __init__(self, player_id: int, strategy: Strategy) -> None:
@@ -72,9 +85,10 @@ class Game:
             self.player2.previous_actions.append((action2, action1))
 
 class Simulation:
-    def __init__(self, player_count: int, payoffs: Dict[Tuple[str, str], Tuple[int, int]], total_rounds: int = 20, game_rounds: int = 100) -> None:
+    def __init__(self, player_count: int, payoffs: Dict[Tuple[str, str], Tuple[int, int]], selected_strategy_types: List[str], total_rounds: int = 20, game_rounds: int = 100) -> None:
         self.player_count: int = player_count
         self.payoffs: Dict[Tuple[str, str], Tuple[int, int]] = payoffs
+        self.selected_strategy_types: List[str] = selected_strategy_types
         self.total_rounds: int = total_rounds
         self.game_rounds: int = game_rounds
         self.players: List[Player] = []
@@ -94,7 +108,7 @@ class Simulation:
 
     def update_strategy_population(self) -> None:
         strategy_counts = Counter(player.strategy.name for player in self.players)
-        for strategy_name in Strategy.registry.keys():
+        for strategy_name in self.selected_strategy_types:
             self.strategy_population[strategy_name].append(strategy_counts[strategy_name])
 
     def update_player_strategies(self) -> None:
@@ -105,14 +119,14 @@ class Simulation:
         total_scores = sum(scores_by_strategy.values())
         new_distribution = {
             strategy_name: int((scores_by_strategy[strategy_name] / total_scores) * self.player_count)
-            for strategy_name in Strategy.registry.keys()
+            for strategy_name in self.selected_strategy_types
         }
 
         total_assigned = sum(new_distribution.values())
         surplus = self.player_count - total_assigned
         if surplus > 0:
             sorted_strategies = sorted(
-                Strategy.registry.keys(),
+                self.selected_strategy_types,
                 key=lambda name: scores_by_strategy[name],
                 reverse=True
             )
@@ -134,13 +148,13 @@ class Simulation:
 
     def run_simulation(self) -> None:
         initial_distribution = {
-            strategy_name: self.player_count // len(Strategy.registry)
-            for strategy_name in Strategy.registry.keys()
+            strategy_name: self.player_count // len(self.selected_strategy_types)
+            for strategy_name in self.selected_strategy_types
         }
         surplus = self.player_count - sum(initial_distribution.values())
         strategies = list(initial_distribution.keys())
         for _ in range(surplus):
-            initial_distribution[random.choice(strategies)] += 1
+            initial_distribution[random.choice(self.selected_strategy_types)] += 1
 
         self.initialize_players(initial_distribution)
 
@@ -164,6 +178,7 @@ if __name__ == "__main__":
         ('D', 'C'): (5, 0),
         ('D', 'D'): (1, 1)
     }
-    simulation = Simulation(player_count, payoffs)
+    selected_strategy_types = ["ALLC", "ALLD", "TTT", "TFT"]
+    simulation = Simulation(player_count, payoffs, selected_strategy_types)
     simulation.run_simulation()
     simulation.plot_population()

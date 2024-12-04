@@ -35,3 +35,16 @@ class TFT(Strategy):
         if not previous_actions:
             return 'C'
         return previous_actions[-1][1]
+
+class TTT(Strategy):
+    def __init__(self) -> None:
+        super().__init__("TTT")
+
+    def choose_action(self, previous_actions: List[Tuple[str, str]]) -> str:
+        if len(previous_actions) < 2:
+            return 'C'
+
+        if previous_actions[-1][1] == 'D' and previous_actions[-2][1] == 'D':
+            return 'D'
+
+        return 'C'
