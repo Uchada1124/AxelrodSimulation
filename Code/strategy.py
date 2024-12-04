@@ -48,3 +48,20 @@ class TTT(Strategy):
             return 'D'
 
         return 'C'
+    
+class PVL(Strategy):
+    def __init__(self) -> None:
+        super().__init__("PVL")
+
+    def choose_action(self, previous_actions: List[Tuple[str, str]]) -> str:
+        if not previous_actions:
+            return 'C'
+
+        return_action = {
+            ('C', 'C'): 'C',
+            ('C', 'D'): 'D',
+            ('D', 'C'): 'D',
+            ('D', 'D'): 'C'
+        }
+
+        return return_action[previous_actions[-1]]

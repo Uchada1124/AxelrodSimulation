@@ -1,13 +1,20 @@
 import streamlit as st
 from simulation import Simulation
-from strategy import Strategy, ALLC, ALLD, TFT, TTT
+from strategy import Strategy, ALLC, ALLD, TFT, TTT, PVL
 import matplotlib.pyplot as plt
 
 # Streamlit Sidebar
 st.sidebar.header("Simulation Settings")
 
 # Add available strategies
-strategy_classes = {"ALLC": ALLC, "ALLD": ALLD, "TFT": TFT, "TTT": TTT}
+strategy_classes = {
+    "ALLC": ALLC,
+    "ALLD": ALLD,
+    "TFT": TFT,
+    "TTT": TTT,
+    "PVL": PVL
+}
+
 selected_strategies = st.sidebar.multiselect(
     "Select Strategies", options=list(strategy_classes.keys()), default=list(strategy_classes.keys())
 )
@@ -64,7 +71,7 @@ if st.sidebar.button("Run Simulation"):
     # Plot results
     fig, ax = plt.subplots()
     for strategy_name, populations in sim.strategy_population.items():
-        if strategy_name in selected_strategies:  # Ensure only selected strategies are plotted
+        if strategy_name in selected_strategies:
             ax.plot(populations, label=strategy_name)
     ax.set_xlabel("Round")
     ax.set_ylabel("Population")
