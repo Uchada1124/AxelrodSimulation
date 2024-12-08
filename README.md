@@ -44,7 +44,7 @@ URL : <https://axelrodsimulation.streamlit.app/>
 
 - `__init__`関数は戦略の名前（`NEW`）を登録するために必要. 
 他の部分はそのままコピーして使用できる. 
-- `choose_action`関数で、自分の考えた戦略タイプを記述する. 
+- `choose_action`関数で, 自分の考えた戦略タイプを記述する. 
 必ず `'C'` または `'D'` を返すこと. 
 
 ```python:
@@ -60,7 +60,8 @@ class NEW(Strategy):
         return 'D'  # 条件に応じて返す
 ```
 
-作成した`NEW`戦略をシミュレーションに登録するには,`strategy_classes`に`NEW`を追加
+作成した`NEW`戦略をシミュレーションに登録するには,`strategy_classes`に`NEW`を追加する. 
+
 ```python:
 strategy_classes = {
     "ALLC": ALLC,
@@ -72,7 +73,54 @@ strategy_classes = {
 }
 ```
 
+選択可能な戦略リストにも`NEW`を追加する. 
+
 ```python:
 selected_strategy_types = ["ALLC", "ALLD", "TTT", "TFT", "NEW"]
 
+```
+
+### `previous_actions`の解説
+`previous_actions`は, これまでのゲームで各プレイヤーが取った行動をリスト形式で記録したもの. 
+
+- 各要素は`(my_action, opponent_action)`のタプルになっている. 
+- `my_action`: 自分が取った行動 (`'C'` または `'D'`)
+- `opponent_action`: 相手が取った行動 (`'C'` または `'D'`)
+
+```python:
+previous_actions: List[Tuple[str, str]]
+```
+
+初回のゲームでは, 記録はないので空のリストを`[]`となる. 
+
+```python:
+previous_actions = []
+```
+
+二回目以降のゲームでは, これまでの全てのゲームでの行動履歴が記録されている. 
+
+- 1回目のゲーム: 自分は `'C'`, 相手は `'D'`
+- 2回目のゲーム: 自分は `'D'`, 相手は `'C'`
+- 3回目のゲーム: 自分は `'C'`, 相手は `'C'`
+
+```python:
+previous_actions = [('C', 'D'), ('D', 'C'), ('C', 'C')]
+```
+
+### `previous_actions`の使用例
+#### しっぺ返し戦略(TFT)
+直前の相手の行動に応じて次の行動を選択. 
+
+```python:
+if not previous_actions:  # 初回は協力
+    return 'C'
+return previous_actions[-1][1]  # 相手の最後の行動を模倣
+```
+
+#### 堪忍袋戦略(TTT)
+相手が2回連続で `'D'` を選んだ場合に `'D'` を返す. 
+
+```python:
+if len(previous_actions) >= 2 and previous_actions[-1][1] == 'D' and previous_actions[-2][1] == 'D':
+    return 'D'
 ```
