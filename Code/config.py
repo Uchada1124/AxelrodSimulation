@@ -7,4 +7,4 @@ PAYOFFS = {
     ('D', 'C'): (5, 0),
     ('D', 'D'): (1, 1),
 }
-SELECTED_STRATEGY_TYPES = ["ALLC", "ALLD", "TTT", "TFT"]
+SELECTED_STRATEGY_TYPES = ["ALLC", "ALLD", "TTT", "TFT", "PVL"]

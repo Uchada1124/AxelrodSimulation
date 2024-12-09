@@ -50,6 +50,12 @@ class TTT(Strategy):
         return 'C'
     
 class PVL(Strategy):
+    '''
+    Pavlov戦略の考察
+    ALLDを対戦したとき, ('C', 'D'): 'D'と('D', 'D'): 'C'を繰り返すからALLDには弱そう. 
+    TFT, ALLD, ALLC, PVLでの戦いで, 想像よりも人口が伸びない. 
+    ランダムとかもっと多くの戦略タイプと戦った時でないと真価は発揮しないと予想する. 
+    '''
     def __init__(self) -> None:
         super().__init__("PVL")
 

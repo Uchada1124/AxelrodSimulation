@@ -20,7 +20,7 @@ selected_strategies = st.sidebar.multiselect(
 )
 
 # Player Count
-player_count = st.sidebar.number_input("Number of Players", min_value=10, max_value=500, value=120, step=10)
+player_count = st.sidebar.number_input("Number of Players", min_value=10, max_value=1200, value=120, step=10)
 
 # Total Rounds
 total_rounds = st.sidebar.number_input("Number of Rounds", min_value=1, max_value=100, value=20)
